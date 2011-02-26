@@ -6,6 +6,7 @@
 /* variables for Encoder */
 volatile  byte Channel = 0;  // the channel being pulsed
 static byte OutputPin;	 // the digital pin to use
+
 /* processing states */
 enum pulseStates {stateDISABLED, stateHIGH, stateLOW};
 static byte pulseState = stateDISABLED;  
@@ -15,25 +16,43 @@ typedef struct {
 } Channel_t;
 
 Channel_t Channels[NBR_OF_CHANNELS + 1];  // last entry is for sync pulse delay
+unsigned long RunningPulseWidth = 0;
 
 ISR(TIMER1_COMPA_vect) {
 
    if( pulseState == stateLOW ) {
-	  digitalWrite(OutputPin, LOW); //change to HIGH for invert was LOW  
+          if (Channel ==0){    
+          digitalWrite(ledTest1,HIGH);
+          digitalWrite(ledTest1,LOW);
+          }
+     	  digitalWrite(OutputPin, LOW); //change to HIGH for invert was LOW  
 	  OCR1A = Channels[Channel].ticks;
-	  pulseState = stateHIGH;
+          
+          pulseState = stateHIGH;
    }
   
    else if(pulseState == stateHIGH)
    {
 	   OCR1A = MS_TO_TICKS(INTER_CHAN_DELAY);
-		 if( Channel < NBR_OF_CHANNELS)
-		digitalWrite(OutputPin, HIGH); //change to LOW for invert was HIGH
+           if( Channel < NBR_OF_CHANNELS)
+           {
+             RunningPulseWidth += Channels[Channel].ticks + INTER_CHAN_DELAY_TICKS;
+	     digitalWrite(OutputPin, HIGH); //change to LOW for invert was HIGH
+           }
 	   pulseState = stateLOW;
-	   if(++Channel > NBR_OF_CHANNELS) {// note that NBR_OF_CHANNELS+1 is the sync pulse
+	   
+           Channel++;
+           if(Channel == NBR_OF_CHANNELS)
+           {
+             Channels[NBR_OF_CHANNELS].ticks = (unsigned int)(FRAME_RATE_TICKS - RunningPulseWidth);
+             RunningPulseWidth = 0;
+           }
+
+           if(Channel > NBR_OF_CHANNELS) {// note that NBR_OF_CHANNELS+1 is the sync pulse
 	     Channel = 0;
-             digitalWrite(ledTest1,HIGH);
-             digitalWrite(ledTest1,LOW);		    
+             digitalWrite(OutputPin, HIGH); //needed to make the Futaba Trainer string look roght
+//         digitalWrite(ledTest1,HIGH);
+//          digitalWrite(ledTest1,LOW);		    
 	   }
    }    
 }
@@ -49,8 +68,8 @@ static void ChannelStorePulseWidth(byte Channel, int microseconds) {
    Serial.print(Channel,DEC);
    Serial.print("=\t");
    Serial.print(Channels[Channel].ticks,DEC);
-   Serial.print("SyncPulseWidth= ");
-   Serial.print(SYNC_PULSE_WIDTH);
+   Serial.print(" RunningPulseWidth= ");
+   Serial.print(RunningPulseWidth);
    Serial.print("\r\n");
 #endif
 }

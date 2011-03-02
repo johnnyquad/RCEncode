@@ -17,7 +17,7 @@ extern "C"{
 #define MIN_CHANNEL_PULSE 1000  // 1ms
 #define MID_CHANNEL_PULSE 1500  // 1.5ms
 #define MAX_CHANNEL_PULSE 2000  // 2 ms
-#define INTER_CHAN_DELAY  200   // 200 microseconds
+#define INTER_CHAN_DELAY  180   // 200 microseconds
 #define INTER_CHAN_DELAY_TICKS (unsigned int)(MS_TO_TICKS(INTER_CHAN_DELAY));
 #define FRAME_RATE	  20000 // 20 ms
 #define FRAME_RATE_TICKS  (unsigned int)(MS_TO_TICKS(FRAME_RATE))

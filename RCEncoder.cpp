@@ -2,7 +2,7 @@
 //
 
 #include "RCEncoder.h"
-#define DEBUG
+//#define DEBUG
 /* variables for Encoder */
 volatile  byte Channel = 0;  // the channel being pulsed
 static byte OutputPin;	 // the digital pin to use
@@ -50,7 +50,7 @@ ISR(TIMER1_COMPA_vect) {
 
            if(Channel > NBR_OF_CHANNELS) {// note that NBR_OF_CHANNELS+1 is the sync pulse
 	     Channel = 0;
-             digitalWrite(OutputPin, HIGH); //needed to make the Futaba Trainer string look roght
+             digitalWrite(OutputPin, HIGH); //needed to make the Futaba Trainer string look right
 //         digitalWrite(ledTest1,HIGH);
 //          digitalWrite(ledTest1,LOW);		    
 	   }

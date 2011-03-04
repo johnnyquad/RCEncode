@@ -12,18 +12,21 @@
 LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
 
 #define OUTPUT_PIN 2
+#define TONE_PIN 3
 #define TRIM_MIN -60
 #define TRIM_MAX 60
-#define THROTTLELOOPTIME 100000  // 100ms, 10Hz
+#define THROTTLELOOPTIME 50000  // in uS .. 50ms, 20Hz
 
 bool StateCH5;
 bool StateCH6;
 bool throttleLock;
-unsigned long currentTime;
+bool beepOnce;
+unsigned long currentTime; //in uS
 unsigned long lastTime;
 unsigned long loopTime;
 unsigned long throttleTime;
 int currentThrottle;
+
 
 
 void setup ()
@@ -53,12 +56,13 @@ void setup ()
 StateCH5 = 0;
 StateCH6 = 0;
 throttleLock = 0;
+beepOnce = 0;
 
 }
 
 void loop ()
 {
-  currentTime = millis();
+  currentTime = micros();
   int trim1 = analogRead(5); //read trim pots
   trim1= map(trim1, 0,1023,TRIM_MIN,TRIM_MAX);
   int trim2 = analogRead(6);
@@ -138,23 +142,38 @@ void loop ()
         }
       }
       
-      if(throttleLock == 1)
+      if(throttleLock == 1) //lock throttle and use trigger & thumb button to inc/dec throttle
       {
-        if (digitalRead(29) == 0 && (currentTime > throttleTime))// ip 29 throttle up
+
+      if (currentTime > throttleTime) // do throt inc/dec
+      {
+        if (digitalRead(29) == 0)//active low
         {
-          currentThrottle = currentThrottle + 1;
-          throttleTime = currentTime + THROTTLELOOPTIME;
+          currentThrottle = currentThrottle + 5;
+          if (currentThrottle > MAX_CHANNEL_PULSE)
+          {
+            currentThrottle = MAX_CHANNEL_PULSE;
+          }          
+          tone(TONE_PIN,2090,1);//2038 res
         }
-        if (digitalRead(30) == 0 && (currentTime > throttleTime))// ip 30 throttle down
+        if (digitalRead(30) == 0)//active low
         {
-          currentThrottle = currentThrottle - 1;
-          throttleTime = currentTime + THROTTLELOOPTIME;
+          currentThrottle = currentThrottle - 5;
+          if (currentThrottle < MIN_CHANNEL_PULSE)
+          {
+            currentThrottle = MIN_CHANNEL_PULSE;
+          }
+          tone(TONE_PIN,2000,1);
         }
+          
+        throttleTime = currentTime + THROTTLELOOPTIME;
+      }
       
+
         lcd.setCursor(10,1);
         lcd.print("    ");
         lcd.setCursor(10,1);
-        lcd.print(pulseWidth);
+        lcd.print(currentThrottle);
         lcd.setCursor(10,2);
         lcd.print("    ");
         if (trim1 >= 0)
@@ -213,7 +232,7 @@ void loop ()
   }
   
   lcd.setCursor(0,0); 
-  lcd.print("ROLL PITH THROT  YAW");
+  lcd.print("ROLL PITH THROT YAW ");
   
   lcd.setCursor(0,3);
   lcd.print(StateCH5);
@@ -250,20 +269,27 @@ void loop ()
   lcd.setCursor(2,3);
   lcd.print(StateCH6);  
   
+
   int tl0 = digitalRead(27);//TL zero = Throttle lock off
   if (tl0 == 0) //active low
   {
-    throttleLock = 0;
+    if (throttleLock == 1)
+    {
+      throttleLock = 0;
+    }
   }  
   int tl1 = digitalRead(28);//TL one = Throttle lock on
   if (tl1 == 0) //active low
   {
-    throttleLock = 1;
+    if (throttleLock == 0)
+    {
+      throttleLock = 1;
+    }
   }  
   lcd.setCursor(4,3);
   lcd.print(throttleLock);
- loopTime = millis() - currentTime;
-Serial.println(loopTime); 
+ loopTime = micros() - currentTime;
+//Serial.println(loopTime); 
  
 //  lcd.print(ch6a);
 //  lcd.print(" ");

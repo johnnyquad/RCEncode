@@ -6,8 +6,8 @@
 
 #include <LiquidCrystal.h>
 #include "RCEncoder.h"
-#include <string.h>
-#include <stdlib.h>
+//#include <string.h>
+//#include <stdlib.h>
 
 LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
 
@@ -39,7 +39,7 @@ void setup ()
   lcd.setCursor(0,1);
   lcd.print("  Futaba PPM Buddy  ");
   lcd.setCursor(0,2);
-  lcd.print("JDH 01/03/2011 V 0.1");
+  lcd.print("JDH 06/03/2011 V 0.1");
   delay(300);
   lcd.clear();
   
@@ -68,7 +68,7 @@ void loop ()
   int trim2 = analogRead(6);
   trim2= map(trim2, 0,1023,TRIM_MIN,TRIM_MAX);
   int trim3 = analogRead(7);
-  trim3= map(trim3, 0,1023,TRIM_MIN,TRIM_MAX);
+  trim3= map(trim3, 0,1023,1,20);// now used for throttle step TRIM_MIN,TRIM_MAX);
   int trim4 = analogRead(8);
   trim4= map(trim4, 0,1023,TRIM_MIN,TRIM_MAX);
   
@@ -108,21 +108,21 @@ void loop ()
       lcd.print(pulseWidth);
       lcd.setCursor(5,2);
       lcd.print("    ");
-      if (trim1 >= 0)
+      if (trim2 >= 0)
       {
         lcd.setCursor(6,2);
-        lcd.print(int(trim1));
+        lcd.print(int(trim2));
       }else
       {
         lcd.setCursor(5,2);
-        lcd.print(int(trim1));
+        lcd.print(int(trim2));
       }
     }
     if (i == 2)//THROTTLE
     {
       if(throttleLock == 0)// no locking just use stick input
       {
-        pulseWidth = pulseWidth + trim3;
+        pulseWidth = pulseWidth ;//+ trim3;
         currentThrottle = pulseWidth;
         encoderWrite(i, pulseWidth);
         lcd.setCursor(10,1);
@@ -131,14 +131,14 @@ void loop ()
         lcd.print(pulseWidth);
         lcd.setCursor(10,2);
         lcd.print("    ");
-        if (trim1 >= 0)
+        if (trim3 >= 0)
         {
           lcd.setCursor(11,2);
-          lcd.print(int(trim1));
+          lcd.print(int(trim3));
         }else
         {
           lcd.setCursor(10,2);
-          lcd.print(int(trim1));
+          lcd.print(int(trim3));
         }
       }
       
@@ -149,7 +149,7 @@ void loop ()
       {
         if (digitalRead(29) == 0)//active low
         {
-          currentThrottle = currentThrottle + 5;
+          currentThrottle = currentThrottle + trim3;
           if (currentThrottle > MAX_CHANNEL_PULSE)
           {
             currentThrottle = MAX_CHANNEL_PULSE;
@@ -158,7 +158,7 @@ void loop ()
         }
         if (digitalRead(30) == 0)//active low
         {
-          currentThrottle = currentThrottle - 5;
+          currentThrottle = currentThrottle - trim3;
           if (currentThrottle < MIN_CHANNEL_PULSE)
           {
             currentThrottle = MIN_CHANNEL_PULSE;
@@ -176,14 +176,14 @@ void loop ()
         lcd.print(currentThrottle);
         lcd.setCursor(10,2);
         lcd.print("    ");
-        if (trim1 >= 0)
+        if (trim3 >= 0)
         {
           lcd.setCursor(11,2);
-          lcd.print(int(trim1));
+          lcd.print(int(trim3));
         }else
         {
           lcd.setCursor(10,2);
-          lcd.print(int(trim1));
+          lcd.print(int(trim3));
         }
       encoderWrite(i,currentThrottle);   
       } 
@@ -199,14 +199,14 @@ void loop ()
       lcd.print(pulseWidth);
       lcd.setCursor(15,2);
       lcd.print("    ");
-      if (trim1 >= 0)
+      if (trim4 >= 0)
       {
         lcd.setCursor(16,2);
-        lcd.print(int(trim1));
+        lcd.print(int(trim4));
       }else
       {
         lcd.setCursor(15,2);
-        lcd.print(int(trim1));
+        lcd.print(int(trim4));
       }
     }
     

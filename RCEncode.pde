@@ -64,13 +64,13 @@ beepOnce = 0;
 void loop ()
 {
   currentTime = micros();
-  int trim1 = analogRead(5); //read trim pots
+  int trim1 = analogRead(4); //read trim pots
   trim1= map(trim1, 0,1023,TRIM_MIN,TRIM_MAX);
-  int trim2 = analogRead(6);
+  int trim2 = analogRead(5);
   trim2= map(trim2, 0,1023,TRIM_MIN,TRIM_MAX);
-  int trim3 = analogRead(7);
+  int trim3 = analogRead(6);
   trim3= map(trim3, 0,1023,1,20);// now used for throttle step TRIM_MIN,TRIM_MAX);
-  int trim4 = analogRead(8);
+  int trim4 = analogRead(7);
   trim4= map(trim4, 0,1023,TRIM_MIN,TRIM_MAX);
   
 // Channel order ROLL(0) PITCH(1) THROTHLE(2) YAW CH5(Aux1) CH6(Aux2) CH7(Cam1) CH8(Cam2)

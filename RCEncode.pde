@@ -9,7 +9,8 @@
 //#include <string.h>
 //#include <stdlib.h>
 
-LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
+// LiquidCrystal(rs, enable, d4, d5, d6, d7)
+LiquidCrystal lcd(9, 8, 7, 6, 5, 4);//lcd(12, 11, 7, 6, 5, 4);
 
 #define OUTPUT_PIN 2
 #define TONE_PIN 3

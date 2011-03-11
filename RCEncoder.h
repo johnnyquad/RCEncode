@@ -7,8 +7,8 @@
 extern "C"{
 #endif
 
-#define ledTest1 8
-#define ledTest2 9
+#define ledTest1 11 //8
+#define ledTest2 12 //9
 
 
 #define MS_TO_TICKS(_ms)  ((_ms) * 2)  // todo, use macro here

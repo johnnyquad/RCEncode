@@ -16,7 +16,7 @@ LiquidCrystal lcd(9, 8, 7, 6, 5, 4);//lcd(12, 11, 7, 6, 5, 4);
 #define TONE_PIN 3
 #define TRIM_MIN -60
 #define TRIM_MAX 60
-#define THROTTLELOOPTIME 50000  // in uS .. 50ms, 20Hz
+#define THROTTLELOOPTIME 100 //in mS .. 50ms, 20Hz
 
 bool StateCH5;
 bool StateCH6;
@@ -63,7 +63,7 @@ beepOnce = 0;
 
 void loop ()
 {
-  currentTime = micros();
+  currentTime = millis();
   int trim1 = analogRead(4); //read trim pots
   trim1= map(trim1, 0,1023,TRIM_MIN,TRIM_MAX);
   int trim2 = analogRead(5);
@@ -289,7 +289,7 @@ void loop ()
   }  
   lcd.setCursor(4,3);
   lcd.print(throttleLock);
- loopTime = micros() - currentTime;
+ loopTime = millis() - currentTime;
 //Serial.println(loopTime); 
  
 //  lcd.print(ch6a);
